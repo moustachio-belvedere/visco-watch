@@ -5,8 +5,6 @@ import seaborn as sns
 
 sns.set(rc={"figure.figsize": (14, 9)})
 sns.set_style("darkgrid")
-curPal = ['#3385ff', '#00b300', '#a64dff']
-sns.set_palette(curPal, n_colors=3)
 
 def sigmoid(t):
 
@@ -30,9 +28,9 @@ def SLS(t, g0, g1, tau):
 ############
 
 # change resolution to change apparent speed of animation
-#~ t = np.linspace(0.0, 650.0, 6500)
-#~ t = np.linspace(0.0, 650.0, 3250)
-t = np.linspace(0.0, 650.0, 800)
+t = np.linspace(0.0, 1000.0, 4000)
+#~ t = np.linspace(0.0, 1000.0, 2000)
+#~ t = np.linspace(0.0, 1000.0, 1000)
 
 length = len(t)
 
@@ -40,6 +38,7 @@ sls_t = SLS(t, 0.15, 0.5, 100.0)
 sls_t_padded = np.pad(sls_t, (len(sls_t), len(sls_t)), 'constant', constant_values=(0, 0))
 sls_t_padded = np.flipud(sls_t_padded) # we want convolution NOT correlation!
 
+e = sigmoid(t - 150.0) - sigmoid(t - 500.0)
 de_dt = sigmoid_grad(t, 150.0) - sigmoid_grad(t, 500.0)
 
 convolved = np.multiply(np.convolve(sls_t, de_dt, mode='full')[0:len(t)], np.gradient(t))
@@ -48,36 +47,95 @@ convolved = np.multiply(np.convolve(sls_t, de_dt, mode='full')[0:len(t)], np.gra
 # plotting #
 ############
 
-fig, ax = pl.subplots()
+curPal = ['#00b300', '#a64dff']
 
-ax.set_ylim(-0.55, 0.75)
+fig, axarr = pl.subplots(2, 2)
 
-de_line, = ax.plot(t, de_dt)
-sls_line, = ax.plot(t[0], sls_t_padded[2*length], '--')
-convolved_line, = ax.plot(t[0], convolved[0]) 
+# ax1 set up
+e_line, = axarr[0,0].plot(t, e, "-", label="strain load", color="#566573")
+de_line00, = axarr[0,0].plot(t, de_dt, "--", label="d(strain)/dt", color="#3385ff")
+dotfollow_line, = axarr[0,0].plot(t[0], e[0], "o", color="#dc7633") 
 
-lines = [de_line, sls_line, convolved_line]
+axarr[0,0].legend(loc='lower left')
 
-def init():
+axarr[0,0].set_xlim(0, 1000)
+axarr[0,0].set_ylim(-0.4, 1.2)
+
+lines00 = (e_line, de_line00, dotfollow_line)
+
+def init00():
+		
+	lines00[2].set_data(t[0], e[0])
 	
-	lines[0].set_data(t, de_dt)
-	lines[1].set_data(t[0], sls_t_padded[2*length])
-	lines[2].set_data(t[0], convolved[0])
+	return lines00
+	
+def animate00(i):
+	
+	lines00[2].set_data(t[i], e[i]) 
+	
+	return lines00
+
+ani00 = anim.FuncAnimation(fig, animate00, np.arange(1, length-1), interval=1, init_func=init00, blit=True, repeat=True)
+	
+# ax2 set up
+axarr[1,0].plot(t, sls_t, label="G_SLS(t)", color="#00b300")
+axarr[1,0].legend(loc='lower left')
+
+axarr[1,0].set_xlim(0, 1000)
+axarr[1,0].set_ylim(0.0, 0.75)
+
+# axarr[0,1] set up
+axarr[0,1].set_xlim(0, 1000)
+axarr[0,1].set_ylim(-0.55, 0.75)
+
+de_line, = axarr[0,1].plot(t, de_dt, label="d(strain)/dt", color="#3385ff")
+sls_line, = axarr[0,1].plot(t, sls_t_padded[(2*length - 1):(3*length - 1)], '-.', label="0 padded G_SLS(-t)", color="#00b300")
+
+lines01 = (de_line, sls_line)
+
+def init01():
+	
+	lines01[0].set_data(t, de_dt)
+	lines01[1].set_data(t, sls_t_padded[(2*length - 1):(3*length - 1)])
 	    
-	return lines
+	return lines01
 
-def animate(i):
+def animate01(i):
 	
-	if i<length:
-		lines[1].set_data(t[0:i], sls_t_padded[(2*length - i):(2*length)])
-		lines[2].set_data(t[0:i], convolved[0:i])
-	else:
-		# in you want SLS to keep sliding
-		lines[1].set_data(t[(i - length):i], sls_t_padded[length:(3*length - i)])
+	lines01[1].set_ydata(sls_t_padded[(2*length - i):(3*length - i)])
 	
-	return lines
+	return lines01
+
+axarr[0,1].legend(loc='lower left')
+ani01 = anim.FuncAnimation(fig, animate01, np.arange(1, length-1), interval=1, init_func=init01, blit=True, repeat=True)
+
+# axarr[1,1] set up
+axarr[1,1].set_xlim(0, 1000)
+axarr[1,1].set_ylim(-0.55, 0.75)
+
+multiplied_scaling = 2.0
+
+convolved_line, = axarr[1,1].plot(t[0], convolved[0], "-.", label="convolution", color="#dc7633")
+multiplied_line, = axarr[1,1].plot(t, multiplied_scaling*np.multiply(de_dt, sls_t_padded[(2*length - 1):(3*length - 1)]), "-", label="multiplication", color="#a64dff", alpha=0.7)
+
+lines11 = (convolved_line, multiplied_line)
+
+def init11():
 	
-ani = anim.FuncAnimation(fig, animate, np.arange(1, length), interval=1, init_func=init, blit=True)
+	lines11[0].set_data(t[0], convolved[0])
+	lines11[1].set_data(t, multiplied_scaling*np.multiply(de_dt, sls_t_padded[(2*length - 1):(3*length - 1)]))
+	    
+	return lines11
+	
+def animate11(i):
+	
+	lines11[0].set_data(t[0:i], convolved[0:i])
+	lines11[1].set_data(t, multiplied_scaling*np.multiply(de_dt, sls_t_padded[(2*length - i):(3*length - i)]))
+	
+	return lines11
+
+axarr[1,1].legend(loc='lower left')
+ani11 = anim.FuncAnimation(fig, animate11, np.arange(1, length-1), interval=1, init_func=init11, blit=True, repeat=True)
 
 pl.show()
 
