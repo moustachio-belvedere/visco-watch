@@ -47,7 +47,8 @@ convolved = np.multiply(np.convolve(sls_t, de_dt, mode='full')[0:len(t)], np.gra
 # plotting #
 ############
 
-curPal = ['#00b300', '#a64dff']
+# global set up
+grepeat = True
 
 fig, axarr = pl.subplots(2, 2)
 
@@ -75,7 +76,7 @@ def animate00(i):
 	
 	return lines00
 
-ani00 = anim.FuncAnimation(fig, animate00, np.arange(1, length-1), interval=1, init_func=init00, blit=True, repeat=True)
+ani00 = anim.FuncAnimation(fig, animate00, np.arange(1, length-1), interval=1, init_func=init00, blit=True, repeat=grepeat)
 	
 # ax2 set up
 axarr[1,0].plot(t, sls_t, label="G_SLS(t)", color="#00b300")
@@ -107,7 +108,7 @@ def animate01(i):
 	return lines01
 
 axarr[0,1].legend(loc='lower left')
-ani01 = anim.FuncAnimation(fig, animate01, np.arange(1, length-1), interval=1, init_func=init01, blit=True, repeat=True)
+ani01 = anim.FuncAnimation(fig, animate01, np.arange(1, length-1), interval=1, init_func=init01, blit=True, repeat=grepeat)
 
 # axarr[1,1] set up
 axarr[1,1].set_xlim(0, 1000)
@@ -135,7 +136,7 @@ def animate11(i):
 	return lines11
 
 axarr[1,1].legend(loc='lower left')
-ani11 = anim.FuncAnimation(fig, animate11, np.arange(1, length-1), interval=1, init_func=init11, blit=True, repeat=True)
+ani11 = anim.FuncAnimation(fig, animate11, np.arange(1, length-1), interval=1, init_func=init11, blit=True, repeat=grepeat)
 
 pl.show()
 
