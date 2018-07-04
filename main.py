@@ -28,9 +28,9 @@ def SLS(t, g0, g1, tau):
 ############
 
 # change resolution to change apparent speed of animation
-t = np.linspace(0.0, 1000.0, 4000)
+#~ t = np.linspace(0.0, 1000.0, 4000)
 #~ t = np.linspace(0.0, 1000.0, 2000)
-#~ t = np.linspace(0.0, 1000.0, 1000)
+t = np.linspace(0.0, 1000.0, 1000)
 
 length = len(t)
 
