@@ -28,9 +28,9 @@ def SLS(t, g0, g1, tau):
 ############
 
 # change resolution to change apparent speed of animation
-#~ t = np.linspace(0.0, 1000.0, 4000)
+t = np.linspace(0.0, 1000.0, 4000)
 #~ t = np.linspace(0.0, 1000.0, 2000)
-t = np.linspace(0.0, 1000.0, 1000)
+#~ t = np.linspace(0.0, 1000.0, 1000)
 
 length = len(t)
 
@@ -52,7 +52,7 @@ grepeat = True
 
 fig, axarr = pl.subplots(2, 2)
 
-# ax1 set up
+# axarr[0,0] set up
 e_line, = axarr[0,0].plot(t, e, "-", label="strain load", color="#566573")
 de_line00, = axarr[0,0].plot(t, de_dt, "--", label="d(strain)/dt", color="#3385ff")
 dotfollow_line, = axarr[0,0].plot(t[0], e[0], "o", color="#dc7633") 
@@ -78,7 +78,7 @@ def animate00(i):
 
 ani00 = anim.FuncAnimation(fig, animate00, np.arange(1, length-1), interval=1, init_func=init00, blit=True, repeat=grepeat)
 	
-# ax2 set up
+# axarr[1,0] set up
 axarr[1,0].plot(t, sls_t, label="G_SLS(t)", color="#00b300")
 axarr[1,0].legend(loc='lower left')
 
@@ -96,7 +96,6 @@ lines01 = (de_line, sls_line)
 
 def init01():
 	
-	lines01[0].set_data(t, de_dt)
 	lines01[1].set_data(t, sls_t_padded[(2*length - 1):(3*length - 1)])
 	    
 	return lines01
@@ -117,21 +116,21 @@ axarr[1,1].set_ylim(-0.55, 0.75)
 multiplied_scaling = 2.0
 
 convolved_line, = axarr[1,1].plot(t[0], convolved[0], "-.", label="convolution", color="#dc7633")
-multiplied_line, = axarr[1,1].plot(t, multiplied_scaling*np.multiply(de_dt, sls_t_padded[(2*length - 1):(3*length - 1)]), "-", label="multiplication", color="#a64dff", alpha=0.7)
+multiplied_line, = axarr[1,1].plot(t[0], multiplied_scaling*np.multiply(de_dt, sls_t_padded[(2*length - 1):(3*length - 1)])[0], "-", label="multiplication", color="#a64dff", alpha=0.7)
 
 lines11 = (convolved_line, multiplied_line)
 
 def init11():
 	
 	lines11[0].set_data(t[0], convolved[0])
-	lines11[1].set_data(t, multiplied_scaling*np.multiply(de_dt, sls_t_padded[(2*length - 1):(3*length - 1)]))
+	lines11[1].set_data(t[0], multiplied_scaling*np.multiply(de_dt, sls_t_padded[(2*length - 1):(3*length - 1)])[0])
 	    
 	return lines11
 	
 def animate11(i):
 	
 	lines11[0].set_data(t[0:i], convolved[0:i])
-	lines11[1].set_data(t, multiplied_scaling*np.multiply(de_dt, sls_t_padded[(2*length - i):(3*length - i)]))
+	lines11[1].set_data(t[0:i], multiplied_scaling*np.multiply(de_dt, sls_t_padded[(2*length - i):(3*length - i)])[0:i])
 	
 	return lines11
 
