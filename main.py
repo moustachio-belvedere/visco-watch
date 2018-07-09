@@ -65,9 +65,10 @@ axarr[0,0].set_ylim(-0.4, 1.2)
 lines00 = (e_line, de_line00, dotfollow_line)
 
 def init00():
-		
-	lines00[2].set_data(t[0], e[0])
 	
+	lines00[0].set_data(t, e)
+	lines00[1].set_data(t, de_dt)
+		
 	return lines00
 	
 def animate00(i):
@@ -96,7 +97,7 @@ lines01 = (de_line, sls_line)
 
 def init01():
 	
-	lines01[1].set_data(t, sls_t_padded[(2*length - 1):(3*length - 1)])
+	lines01[0].set_data(t, de_dt)
 	    
 	return lines01
 
@@ -122,9 +123,6 @@ lines11 = (convolved_line, multiplied_line)
 
 def init11():
 	
-	lines11[0].set_data(t[0], convolved[0])
-	lines11[1].set_data(t[0], multiplied_scaling*np.multiply(de_dt, sls_t_padded[(2*length - 1):(3*length - 1)])[0])
-	    
 	return lines11
 	
 def animate11(i):
