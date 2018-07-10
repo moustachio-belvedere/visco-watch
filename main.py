@@ -28,8 +28,8 @@ def SLS(t, g0, g1, tau):
 ############
 
 # change resolution to change apparent speed of animation
-t = np.linspace(0.0, 1000.0, 4000)
-#~ t = np.linspace(0.0, 1000.0, 2000)
+#~ t = np.linspace(0.0, 1000.0, 4000)
+t = np.linspace(0.0, 1000.0, 2000)
 #~ t = np.linspace(0.0, 1000.0, 1000)
 
 length = len(t)
@@ -49,7 +49,7 @@ convolved = np.multiply(np.convolve(sls_t, de_dt, mode='full')[0:len(t)], np.gra
 
 # global set up
 grepeat = True
-
+	
 fig, axarr = pl.subplots(2, 2)
 
 # axarr[0,0] set up
@@ -128,7 +128,8 @@ def init11():
 def animate11(i):
 	
 	lines11[0].set_data(t[0:i], convolved[0:i])
-	lines11[1].set_data(t[0:i], multiplied_scaling*np.multiply(de_dt, sls_t_padded[(2*length - i):(3*length - i)])[0:i])
+	#~ lines11[1].set_data(t[0:i], multiplied_scaling*np.multiply(de_dt, sls_t_padded[(2*length - i):(3*length - i)])[0:i])
+	lines11[1].set_data(t, multiplied_scaling*np.multiply(de_dt, sls_t_padded[(2*length - i):(3*length - i)]))
 	
 	return lines11
 
