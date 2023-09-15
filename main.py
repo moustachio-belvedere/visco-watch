@@ -36,13 +36,16 @@ class AnimatedConvolution:
         sls_t_padded = np.pad(
             self.sls_t, (self.length, self.length), "constant", constant_values=(0, 0)
         )
-        self.sls_t_padded = np.flipud(sls_t_padded)  # we want convolution NOT correlation!
+        self.sls_t_padded = np.flipud(
+            sls_t_padded
+        )  # we want convolution NOT correlation!
 
         self.e = sigmoid(self.t - 150.0) - sigmoid(self.t - 500.0)
         self.de_dt = sigmoid_grad(self.t, 150.0) - sigmoid_grad(self.t, 500.0)
 
         self.convolved = np.multiply(
-            np.convolve(self.sls_t, self.de_dt, mode="full")[0 : self.length], np.gradient(self.t)
+            np.convolve(self.sls_t, self.de_dt, mode="full")[0 : self.length],
+            np.gradient(self.t),
         )
 
         self.fig, self.axarr = plt.subplots(2, 2, figsize=(14.0, 9.0))
@@ -58,7 +61,9 @@ class AnimatedConvolution:
         plt.show()
 
     def setup00(self, ax):
-        (self.e_line,) = ax.plot(self.t, self.e, "-", label="strain load", color="#566573")
+        (self.e_line,) = ax.plot(
+            self.t, self.e, "-", label="strain load", color="#566573"
+        )
         (self.de_line00,) = ax.plot(
             self.t, self.de_dt, "--", label="d(strain)/dt", color="#3385ff"
         )
@@ -122,7 +127,10 @@ class AnimatedConvolution:
         (multiplied_line,) = ax.plot(
             self.t[0],
             self.multiplied_scaling
-            * np.multiply(self.de_dt, self.sls_t_padded[(2 * self.length - 1) : (3 * self.length - 1)])[0],
+            * np.multiply(
+                self.de_dt,
+                self.sls_t_padded[(2 * self.length - 1) : (3 * self.length - 1)],
+            )[0],
             "-",
             label="multiplication",
             color="#a64dff",
@@ -159,7 +167,9 @@ class AnimatedConvolution:
         return self.lines01
 
     def animate01(self, i):
-        self.lines01[1].set_ydata(self.sls_t_padded[(2 * self.length - i) : (3 * self.length - i)])
+        self.lines01[1].set_ydata(
+            self.sls_t_padded[(2 * self.length - i) : (3 * self.length - i)]
+        )
         return self.lines01
 
     def init11(self):
@@ -170,7 +180,10 @@ class AnimatedConvolution:
         self.lines11[1].set_data(
             self.t,
             self.multiplied_scaling
-            * np.multiply(self.de_dt, self.sls_t_padded[(2 * self.length - i) : (3 * self.length - i)]),
+            * np.multiply(
+                self.de_dt,
+                self.sls_t_padded[(2 * self.length - i) : (3 * self.length - i)],
+            ),
         )
         return self.lines11
 
